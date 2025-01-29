@@ -9,7 +9,7 @@ st.set_page_config(page_title="Carga de Datos", layout="wide")
 st.title("Cargar archivos CSV/XLSX y generar gráficos 📊")
 
 # Cargar archivo
-uploaded_file = st.file_uploader("Sube tu archivo (CSV o XLSX)", type=["csv", "xlsx"])
+uploaded_file = st.file_uploader("Sube tu archivo (CSV o XLSX)", type=["csv", "xlsx", "xls"])
 
 if uploaded_file is not None:
     try:
