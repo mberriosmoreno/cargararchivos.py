@@ -6,10 +6,10 @@ import plotly.express as px
 st.set_page_config(page_title="Carga de Datos", layout="wide")
 
 # Título de la aplicación
-st.title("Cargar archivos CSV/XLSX y generar gráficos 📊")
+st.title("Cargar archivos CSV, XLSX o XLS y generar gráficos 📊")
 
 # Cargar archivo
-uploaded_file = st.file_uploader("Sube tu archivo (CSV o XLSX)", type=["csv", "xlsx", "xls"])
+uploaded_file = st.file_uploader("Sube tu archivo (CSV, XLSX o XLS)", type=["csv", "xlsx", "xls"])
 
 if uploaded_file is not None:
     try:
@@ -17,12 +17,17 @@ if uploaded_file is not None:
         if uploaded_file.name.endswith(".csv"):
             df = pd.read_csv(uploaded_file)
         elif uploaded_file.name.endswith(".xlsx"):
-            elif uploaded_file.name.endswith(".xls"):
             # Obtener las hojas disponibles
             xls = pd.ExcelFile(uploaded_file, engine="openpyxl")
             sheet_names = xls.sheet_names  # Lista de nombres de hojas
             selected_sheet = st.selectbox("Selecciona una hoja", sheet_names)  # Selector de hojas
             df = pd.read_excel(uploaded_file, sheet_name=selected_sheet, engine="openpyxl")
+        elif uploaded_file.name.endswith(".xls"):
+            # Obtener las hojas disponibles
+            xls = pd.ExcelFile(uploaded_file, engine="xlrd")
+            sheet_names = xls.sheet_names  # Lista de nombres de hojas
+            selected_sheet = st.selectbox("Selecciona una hoja", sheet_names)  # Selector de hojas
+            df = pd.read_excel(uploaded_file, sheet_name=selected_sheet, engine="xlrd")
         
         # Mostrar datos
         st.subheader("Vista previa de los datos")
@@ -33,6 +38,13 @@ if uploaded_file is not None:
         x_axis = st.selectbox("Elige la columna para el eje X", df.columns)
         y_axis = st.selectbox("Elige la columna para el eje Y", df.columns)
         chart_type = st.selectbox("Tipo de gráfico", ["Línea", "Barras", "Dispersión"])
+
+        # Mostrar valores únicos de la columna seleccionada
+        if st.checkbox("Mostrar valores únicos de la columna seleccionada"):
+            selected_column = st.selectbox("Elige una columna para ver sus valores únicos", df.columns)
+            unique_values = df[selected_column].unique()  # Obtener valores únicos
+            st.write(f"Valores únicos en la columna **{selected_column}**:")
+            st.write(unique_values)
 
         # Crear el gráfico con Plotly (moderno e interactivo)
         if chart_type == "Línea":
@@ -48,4 +60,4 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Error al procesar el archivo: {str(e)}")
 else:
-    st.warning("Por favor, sube un archivo CSV o XLSX.")
+    st.warning("Por favor, sube un archivo CSV, XLSX o XLS.")
