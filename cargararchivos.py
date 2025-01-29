@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px  # Para gráficos modernos
+import plotly.express as px
 
 # Configuración de la página
 st.set_page_config(page_title="Carga de Datos", layout="wide")
@@ -17,7 +17,11 @@ if uploaded_file is not None:
         if uploaded_file.name.endswith(".csv"):
             df = pd.read_csv(uploaded_file)
         elif uploaded_file.name.endswith(".xlsx"):
-            df = pd.read_excel(uploaded_file, engine="openpyxl")
+            # Obtener las hojas disponibles
+            xls = pd.ExcelFile(uploaded_file, engine="openpyxl")
+            sheet_names = xls.sheet_names  # Lista de nombres de hojas
+            selected_sheet = st.selectbox("Selecciona una hoja", sheet_names)  # Selector de hojas
+            df = pd.read_excel(uploaded_file, sheet_name=selected_sheet, engine="openpyxl")
         
         # Mostrar datos
         st.subheader("Vista previa de los datos")
